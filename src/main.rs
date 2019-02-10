@@ -79,7 +79,7 @@ fn tree(path: &Path, indent: usize) -> Result<(), Box<StdError>> {
             println!(
                 "{:indent$}{}",
                 " ",
-                resolved.to_str().unwrap(),
+                resolved.file_name().unwrap().to_str().unwrap(),
                 indent = indent
             );
             if resolved.is_dir() {
