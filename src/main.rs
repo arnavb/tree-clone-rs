@@ -28,6 +28,7 @@ fn main() {
             eprintln!("IO Error: {}", io_err);
             exit_code = 1;
         } else {
+            eprintln!("Unknown error: {}", err);
             exit_code = 1;
         }
     }
@@ -52,7 +53,7 @@ fn cli() -> Result<(), Box<StdError>> {
 
 /// Resolves a passed path to either a relative or absolute location.
 /// If the path does not exist or refer to a folder, an `io::Error` will be returned.
-fn resolve_folderpath(path: &str) -> Result<PathBuf, Box<IoError>> {
+fn resolve_folderpath(path: &str) -> Result<PathBuf, IoError> {
     let mut result = PathBuf::from(path);
 
     if !result.exists() || !result.is_dir() {
@@ -63,8 +64,7 @@ fn resolve_folderpath(path: &str) -> Result<PathBuf, Box<IoError>> {
             return Err(IoError::new(
                 io::ErrorKind::NotFound,
                 "The passed path does not exist or does not refer to a folder!",
-            )
-            .into());
+            ));
         }
     }
 
@@ -72,7 +72,7 @@ fn resolve_folderpath(path: &str) -> Result<PathBuf, Box<IoError>> {
 }
 
 /// Recursively prints out all folders and files in the passed directory
-fn tree(path: &Path, indent: usize) -> Result<(), Box<StdError>> {
+fn tree(path: &Path, indent: usize) -> Result<(), IoError> {
     if path.is_dir() {
         for path in read_dir(path)? {
             let resolved = path?.path();
