@@ -45,7 +45,7 @@ fn cli() -> Result<(), Box<StdError>> {
     let folder_path = matches.value_of("DIR").unwrap_or(".");
     let folder_path = resolve_folderpath(folder_path)?;
 
-    tree(&folder_path)?;
+    tree(&folder_path, 0)?;
 
     Ok(())
 }
@@ -72,15 +72,18 @@ fn resolve_folderpath(path: &str) -> Result<PathBuf, Box<IoError>> {
 }
 
 /// Recursively prints out all folders and files in the passed directory
-fn tree(path: &Path) -> Result<(), Box<StdError>> {
+fn tree(path: &Path, indent: usize) -> Result<(), Box<StdError>> {
     if path.is_dir() {
         for path in read_dir(path)? {
             let resolved = path?.path();
+            println!(
+                "{:indent$}{}",
+                " ",
+                resolved.to_str().unwrap(),
+                indent = indent
+            );
             if resolved.is_dir() {
-                println!("Found directory {}", resolved.to_str().unwrap());
-                tree(&resolved)?;
-            } else if resolved.is_file() {
-                println!("Found file {}", resolved.to_str().unwrap());
+                tree(&resolved, indent + 4)?;
             }
         }
     }
